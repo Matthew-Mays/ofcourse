@@ -1,0 +1,41 @@
+{
+  "courses": [
+    {
+      "name": "Test 1",
+      "price": "230.00",
+      "id": 1
+    },
+    {
+      "name": "Test 2",
+      "price": "230.10",
+      "id": 2
+    },
+    {
+      "name": "Test 2",
+      "price": "230.35",
+      "id": 3
+    },
+    {
+      "name": "Test 3",
+      "price": "230.46",
+      "id": 4
+    },
+    {
+      "name": "Test 4",
+      "price": 230,
+      "id": 5
+    }
+  ],
+  "lessons": [
+    {
+      "name": "Test",
+      "courseId": 1,
+      "id": 1
+    },
+    {
+      "name": "1",
+      "courseId": 1,
+      "id": 2
+    }
+  ]
+}
