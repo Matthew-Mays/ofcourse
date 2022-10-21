@@ -38,9 +38,9 @@ const CourseDetailPage = ({ course, loading, lessons }) => {
 const mapState = (state, ownProps) => {
     const courseId = parseInt(ownProps.courseId, 10);
   return {
-    loading: state.coursesLoading,
-    course: state.courses.find((c) => c.id === courseId),
-    lessons: state.lessons.filter(lesson => lesson.courseId === courseId)
+    loading: state.courses.coursesLoading,
+    course: state.courses.courses.find((c) => c.id === courseId),
+    lessons: state.lessons.lessons.filter(lesson => lesson.courseId === courseId)
   };
 };
 export default connect(mapState)(CourseDetailPage);
