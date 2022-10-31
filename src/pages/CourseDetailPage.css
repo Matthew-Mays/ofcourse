@@ -8,15 +8,21 @@
   background-color: #673ab7;
   color: #fff;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 20px;
 }
 .CourseDetail header h1 {
   background-color: #673ab7;
   margin: 0;
   font-size: 24px;
+}
+.CourseDetail header .LoginLogout {
+  border: none;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
 }
 .CourseDetail header .current-lesson {
   margin: 0;
@@ -27,6 +33,7 @@
 
 .CourseDetail .content {
   display: flex;
+  height: 100vh;
 }
 
 .CourseDetail .sidebar {
@@ -45,10 +52,6 @@
   border-style: solid;
   border-radius: 3px;
 }
-
-.lesson-item a {
-  text-decoration: none;
-}
 .delete-lesson-btn,
 .edit-lesson-btn {
   opacity: 0;
@@ -65,14 +68,12 @@
 .edit-lesson-btn:focus {
   opacity: 1;
 }
-
 .lesson-item.selected {
   background: #e9e5ff;
   color: #222;
   font-weight: 600;
   box-shadow: 0 0 3px #6734ba, 0 0 3px inset #fff;
 }
-
 .lesson,
 .lesson > div,
 .lesson-content {
@@ -80,24 +81,20 @@
   flex: 1;
   flex-direction: column;
 }
-
 .lesson > div {
   padding: 10px;
   display: flex;
 }
-
 .lesson-editor {
   font-size: 18px;
-  font-family: 'Fira Mono', monospace;
+  font-family: "Fira Mono", monospace;
   flex: 1;
   padding: 10px;
 }
-
 .lesson-editor-help {
   display: flex;
   justify-content: space-between;
 }
-
 .preview-btn {
   margin: 10px;
   background-color: #fff;
@@ -106,7 +103,6 @@
   border: none;
   border-radius: 2px;
 }
-
 .preview-btn:active {
   background-color: #f7f2ff;
 }

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
-import "./CourseListPage.css";
+import { Link } from "@reach/router";
+import { openNewCourseModal, closeNewCourseModal } from "../actions";
 import Modal from "react-modal";
 import NewCourse from "../components/NewCourse";
-import { closeNewCourseModal, openNewCourseModal } from "../actions";
-import { Link } from "@reach/router";
+import LoginLogout from "../components/LoginLogout";
+import "./CourseListPage.css";
 
 const CourseListPage = ({
   courses,
@@ -15,12 +16,13 @@ const CourseListPage = ({
   closeNewCourseModal,
 }) => {
   if (coursesLoading) {
-    return <div></div>;
+    return <div />;
   }
 
   if (coursesError) {
     return <div>{coursesError.message}</div>;
   }
+
   return courses.length === 0 ? (
     <div className="CreateCourse">
       <NewCourse />
@@ -28,6 +30,7 @@ const CourseListPage = ({
   ) : (
     <div className="CourseList">
       <h1>Your Courses</h1>
+      <LoginLogout />
       <button className="new-course-btn" onClick={openNewCourseModal}>
         New Course
       </button>
@@ -36,7 +39,7 @@ const CourseListPage = ({
           <li key={course.id}>
             <Link to={`/courses/${course.id}`}>
               <div className="title">{course.name}</div>
-              <div className="price">${course.price}</div>
+              <div className="price">${course.price.toFixed(2)}</div>
             </Link>
           </li>
         ))}
@@ -54,10 +57,8 @@ const mapState = (state) => ({
   coursesError: state.courses.coursesError,
   isModalOpen: state.courses.newCourseModalOpen,
 });
-
 const mapDispatch = {
   openNewCourseModal,
   closeNewCourseModal,
 };
-
 export default connect(mapState, mapDispatch)(CourseListPage);

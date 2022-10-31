@@ -6,39 +6,65 @@ import {
   updateLesson,
   destroyLesson,
   loginUser,
-  createUser
+  createUser,
+  purchase,
 } from "./api";
 
 export const ADD_COURSE_BEGIN = "ADD_COURSE_BEGIN";
 export const ADD_COURSE_SUCCESS = "ADD_COURSE_SUCCESS";
 export const ADD_COURSE_ERROR = "ADD_COURSE_ERROR";
+export const BUY_COURSE_BEGIN = "BUY_COURSE_BEGIN";
+export const BUY_COURSE_SUCCESS = "BUY_COURSE_SUCCESS";
+export const BUY_COURSE_ERROR = "BUY_COURSE_ERROR";
 export const LOAD_COURSES_BEGIN = "LOAD_COURSES_BEGIN";
 export const LOAD_COURSES_SUCCESS = "LOAD_COURSES_SUCCESS";
 export const LOAD_COURSES_ERROR = "LOAD_COURSES_ERROR";
 export const OPEN_NEW_COURSE_MODAL = "OPEN_NEW_COURSE_MODAL";
 export const CLOSE_NEW_COURSE_MODAL = "CLOSE_NEW_COURSE_MODAL";
-export const ADD_LESSON_BEGIN = "ADD_LESSON_BEGIN";
-export const ADD_LESSON_SUCCESS = "ADD_LESSON_SUCCESS";
-export const ADD_LESSON_ERROR = "ADD_LESSON_ERROR";
 export const LOAD_LESSONS_BEGIN = "LOAD_LESSONS_BEGIN";
 export const LOAD_LESSONS_SUCCESS = "LOAD_LESSONS_SUCCESS";
 export const LOAD_LESSONS_ERROR = "LOAD_LESSONS_ERROR";
-export const SAVE_LESSON_BEGIN = "SAVE_LESSON_BEGIN";
-export const SAVE_LESSON_SUCCESS = "SAVE_LESSON_SUCCESS";
-export const SAVE_LESSON_ERROR = "SAVE_LESSON_ERROR";
+export const ADD_LESSON_BEGIN = "ADD_LESSON_BEGIN";
+export const ADD_LESSON_SUCCESS = "ADD_LESSON_SUCCESS";
+export const ADD_LESSON_ERROR = "ADD_LESSON_ERROR";
 export const DELETE_LESSON_BEGIN = "DELETE_LESSON_BEGIN";
 export const DELETE_LESSON_SUCCESS = "DELETE_LESSON_SUCCESS";
 export const DELETE_LESSON_ERROR = "DELETE_LESSON_ERROR";
-export const SET_LESSON_MARKDOWN = "SET_LESSON_MARKDOWN";
+export const SAVE_LESSON_BEGIN = "SAVE_LESSON_BEGIN";
+export const SAVE_LESSON_SUCCESS = "SAVE_LESSON_SUCCESS";
+export const SAVE_LESSON_ERROR = "SAVE_LESSON_ERROR";
 export const RESET_LESSON_ERROR = "RESET_LESSON_ERROR";
-export const TOGGLE_PREVIEW_MODE = 'TOGGLE_PREVIEW_MODE';
+export const RESET_LESSONS = "RESET_LESSONS";
+export const SET_LESSON_MARKDOWN = "SET_LESSON_MARKDOWN";
+export const TOGGLE_PREVIEW_MODE = "TOGGLE_PREVIEW_MODE";
+
 export const LOGIN_BEGIN = "LOGIN_BEGIN";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_ERROR = "LOGIN_ERROR";
 export const SIGNUP_BEGIN = "SIGNUP_BEGIN";
 export const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";
 export const SIGNUP_ERROR = "SIGNUP_ERROR";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 
+export const buyCourse = (courseId) => {
+  return (dispatch) => {
+    dispatch({ type: BUY_COURSE_BEGIN });
+    purchase(courseId)
+      .then((user) => {
+        dispatch({
+          type: BUY_COURSE_SUCCESS,
+          payload: user,
+        });
+        dispatch({
+          type: LOGIN_SUCCESS,
+          payload: user,
+        });
+      })
+      .catch((error) => {
+        dispatch({ type: BUY_COURSE_ERROR, error });
+      });
+  };
+};
 
 export const addCourse = (name, price) => {
   return (dispatch) => {
@@ -60,10 +86,10 @@ export const addLesson = (name, courseId) => {
   return (dispatch) => {
     dispatch({ type: ADD_LESSON_BEGIN });
     return createLesson(name, courseId)
-      .then((lesson) => {
+      .then((course) => {
         dispatch({
           type: ADD_LESSON_SUCCESS,
-          payload: lesson,
+          payload: course,
         });
       })
       .catch((error) => {
@@ -87,6 +113,26 @@ export const saveLesson = (lesson) => {
         dispatch({ type: SAVE_LESSON_ERROR, error });
         throw error;
       });
+  };
+};
+
+let saveTimer = null;
+export const setLessonMarkdown = (lesson, markdown) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: SET_LESSON_MARKDOWN,
+      payload: {
+        lesson,
+        markdown,
+      },
+    });
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+    }
+    saveTimer = setTimeout(() => {
+      const latest = getState().lessons.lessons[lesson.id];
+      dispatch(saveLesson(latest));
+    }, 500);
   };
 };
 
@@ -143,38 +189,6 @@ export const loadLessons = (courseId) => {
   };
 };
 
-export const openNewCourseModal = () => ({
-  type: OPEN_NEW_COURSE_MODAL,
-});
-
-export const closeNewCourseModal = () => ({
-  type: CLOSE_NEW_COURSE_MODAL,
-});
-
-let saveTimer = null;
-export const setLessonMarkdown = (lesson, markdown) => {
-  return (dispatch, getState) => {
-    dispatch({
-      type: SET_LESSON_MARKDOWN,
-      payload: {
-        lesson,
-        markdown,
-      },
-    });
-    if(saveTimer) {
-      clearTimeout(saveTimer);
-    }
-    saveTimer = setTimeout(() => {
-      const latest = getState().lessons.lessons[lesson.id];
-      dispatch(saveLesson(latest))
-    }, 1000);
-  };
-};
-
-export const togglePreviewMode = () => ({
-  type: TOGGLE_PREVIEW_MODE
-});
-
 export const login = (username, password) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_BEGIN });
@@ -204,5 +218,40 @@ export const signup = (username, password) => {
       .catch((error) => {
         dispatch({ type: SIGNUP_ERROR, error });
       });
+  };
+};
+
+export const openNewCourseModal = () => ({
+  type: OPEN_NEW_COURSE_MODAL,
+});
+
+export const closeNewCourseModal = () => ({
+  type: CLOSE_NEW_COURSE_MODAL,
+});
+
+export const togglePreviewMode = () => ({
+  type: TOGGLE_PREVIEW_MODE,
+});
+
+export const loadLastUser = () => {
+  return (dispatch) => {
+    const json = localStorage.getItem("currentUser");
+    try {
+      const user = JSON.parse(json);
+      dispatch({ type: LOGIN_SUCCESS, payload: user });
+    } catch (e) {
+      dispatch(logout());
+    }
+  };
+};
+
+export const logout = () => {
+  return (dispatch) => {
+    dispatch({
+      type: RESET_LESSONS,
+    });
+    dispatch({
+      type: LOGOUT_SUCCESS,
+    });
   };
 };
